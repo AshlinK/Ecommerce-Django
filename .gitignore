@@ -1,2 +1,8 @@
+# Ignore secrets key file
 /crm/secrets.py
+
+# Ignore pycache files
 *pyc
+
+# Ignore database file
+*.sqlite3
