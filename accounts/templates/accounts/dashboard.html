@@ -19,9 +19,9 @@
                 </tr>
                 {% for customer in customers %}
                 <tr>
-                    <th>{{customer.id}}</th>
-                    <th>{{customer.name}}</th>
-                    <th>{{customer.phone}}</th>
+                    <td><a class="btn btn-sm btn-info" href="{% url 'accounts:customer' customer.id %}">View</a></td>
+                    <td>{{customer.name}}</td>
+                    <td>{{customer.phone}}</td>
                 </tr>
                 {% endfor %}
             </table>
@@ -42,11 +42,11 @@
                 </tr>
                 {% for order in orders %}
                 <tr>
-                    <th>{{order.product.name}}</th>
-                    <th>{{order.date_created}}</th>
-                    <th>{{order.status}}</th>
-                    <th><a href="">Update</a></th>
-                    <th><a href="">Remove</a></th>
+                    <td>{{order.product.name}}</td>
+                    <td>{{order.date_created}}</td>
+                    <td>{{order.status}}</td>
+                    <td><a class="btn btn-sm btn-info">Update</a></td>
+					<td><a class="btn btn-sm btn-danger">Remove</a></td>
                 </tr>
                 {% endfor %}
             </table>

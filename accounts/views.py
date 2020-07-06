@@ -49,5 +49,11 @@ def products(request):
     # Render the reponse to the template along with the context.
     return render(request,"accounts/products.html",context=context)
 
-def customer(request):
-    return render(request,"accounts/customer.html")
+def customer(request,pk):
+    # Function based view
+    customer=Customer.objects.get(id=pk)
+
+    orders=Order.objects.filter(customer=customer)
+    order_count=orders.count()
+    context={'customer':customer,'order_count':order_count,'orders':orders}
+    return render(request,"accounts/customer.html",context=context)
