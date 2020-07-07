@@ -9,8 +9,12 @@
         <div class="card card-body">
             <form action="" method="POST">
                 {% csrf_token %}
-                {{form.as_p}}
-                <input class="btn btn-success" type="submit" name="Submit">
+                {{ formset.management_form }}
+                {% for form in formset %}
+                    {{form}}
+                    <br>
+                {% endfor %}
+                <input class="btn btn-sm btn-success" type="submit" name="Submit">
             </form>
         </div>
     </div>
