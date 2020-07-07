@@ -55,13 +55,14 @@ def customer(request,pk):
     # Function based view
     customer=Customer.objects.get(id=pk)
 
-    # Filter Order by customers
+    # Filter Order by customers and count the number of orders
     orders=Order.objects.filter(customer=customer)
     order_count=orders.count()
     context={'customer':customer,'order_count':order_count,'orders':orders}
     return render(request,"accounts/customer.html",context=context)
 
 def create_order(request,pk):
+    # Creating a form set with 10 forms. Customer is the parent and Order is the Child
     OrderFormSet=inlineformset_factory(Customer,Order,fields=('product','status'),extra=10)
     customer=Customer.objects.get(id=pk)
     formset=OrderFormSet(queryset=Order.objects.none(),instance=customer)
@@ -78,6 +79,7 @@ def create_order(request,pk):
     return render(request,"accounts/order_form.html",context=context)
 
 def update_order(request,pk):
+    # Update order using primary key of customer
     order=Order.objects.get(id=pk)
     form=OrderForm(instance=order)
     context={'form':form}
@@ -92,6 +94,7 @@ def update_order(request,pk):
     return render(request,"accounts/order_form.html",context=context)
 
 def delete_order(request,pk):
+    # Delete order using primary key of customer
     order=Order.objects.get(id=pk)
     context={'item':order}
 
