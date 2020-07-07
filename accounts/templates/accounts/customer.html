@@ -63,12 +63,12 @@
 				
 				{% for order in orders %}
 				<tr>
-					<th>{{order.product.name}}</th>
-					<th>{{order.product.category}}</th>
-					<th>{{order.date_created}}</th>
-					<th>{{order.status}}</th>
-					<th><a class="btn btn-sm btn-info">Update</a></th>
-					<th><a class="btn btn-sm btn-danger">Remove</a></th>
+					<td>{{order.product.name}}</td>
+					<td>{{order.product.category}}</td>
+					<td>{{order.date_created}}</td>
+					<td>{{order.status}}</td>
+					<td><a class="btn btn-sm btn-info" href="{% url 'accounts:update_order' order.id %}">Update</a></td>
+					<td><a class="btn btn-sm btn-danger" href="{% url 'accounts:delete_order' order.id%}">Remove</a></td>
 				</tr>
 				{% endfor %}
 

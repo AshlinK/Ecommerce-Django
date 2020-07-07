@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import Product,Order,Customer
+from .forms import *
 from django.views.generic import ListView
 
 # Create your views here.
@@ -53,7 +54,44 @@ def customer(request,pk):
     # Function based view
     customer=Customer.objects.get(id=pk)
 
+    # Filter Order by customers
     orders=Order.objects.filter(customer=customer)
     order_count=orders.count()
     context={'customer':customer,'order_count':order_count,'orders':orders}
     return render(request,"accounts/customer.html",context=context)
+
+def create_order(request):
+    form=OrderForm
+    context={'form':form}
+
+    if request.method =='POST':
+        print("Printing POST:",request.POST)
+        form=OrderForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+
+    return render(request,"accounts/order_form.html",context=context)
+
+def update_order(request,pk):
+    order=Order.objects.get(id=pk)
+    form=OrderForm(instance=order)
+    context={'form':form}
+
+    if request.method =='POST':
+        print("Printing POST:",request.POST)
+        form=OrderForm(request.POST,instance=order)
+        context={'form':form}
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    return render(request,"accounts/order_form.html",context=context)
+
+def delete_order(request,pk):
+    order=Order.objects.get(id=pk)
+    context={'item':order}
+
+    if request.method == "POST":
+        order.delete()
+        return redirect("/")
+    return render(request,"accounts/delete.html",context=context)
