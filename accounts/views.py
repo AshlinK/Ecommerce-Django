@@ -4,6 +4,7 @@ from django.forms import inlineformset_factory
 from .models import Product,Order,Customer
 from .forms import *
 from django.views.generic import ListView
+from .filters import OrderFilter
 
 # Create your views here.
 class HomeView(ListView):
@@ -58,7 +59,12 @@ def customer(request,pk):
     # Filter Order by customers and count the number of orders
     orders=Order.objects.filter(customer=customer)
     order_count=orders.count()
-    context={'customer':customer,'order_count':order_count,'orders':orders}
+
+    # Using the Filter class
+    my_filter=OrderFilter(request.GET,queryset=orders)
+    orders=my_filter.qs
+
+    context={'customer':customer,'order_count':order_count,'orders':orders,'my_filter':my_filter}
     return render(request,"accounts/customer.html",context=context)
 
 def create_order(request,pk):

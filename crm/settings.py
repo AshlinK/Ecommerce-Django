@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # Third-party apps
-    'django-filters',
+    'django_filters',
 
     # Django project-specific apps
     'accounts',
