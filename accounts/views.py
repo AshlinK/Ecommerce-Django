@@ -3,6 +3,7 @@ from django.forms import inlineformset_factory
 from .models import Product, Order, Customer
 from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import Group
 from .forms import *
 from django.views.generic import ListView
 from .filters import OrderFilter
@@ -10,30 +11,33 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .decorators import unauthenticated_user, allowed_users
 
 
+@unauthenticated_user
 def register_page(request):
     """ If the user is authenticated, redirect the user to the home page.
     Else , register the user and if there the user is registered successfully,
     redirect the user to the login page."""
 
-    if request.user.is_authenticated:
-        return redirect("/")
-    else:
-        form = CreateUserForm()
-        context = {'form': form}
+    form = CreateUserForm()
+    context = {'form': form}
 
-        if request.method == "POST":
-            form = CreateUserForm(request.POST)
-            if form.is_valid():
-                form.save()
-                messages.success(request, "Account was created for " +
-                                 form.cleaned_data.get('username'))
-                return redirect("/login/")
+    if request.method == "POST":
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+            group = Group.objects.get(name='customer')
+            user.groups.add(group)
 
-        return render(request, 'accounts/register.html', context)
+            messages.success(request, "Account was created for " + username)
+            return redirect("/login/")
+
+    return render(request, 'accounts/register.html', context)
 
 
+@unauthenticated_user
 def login_page(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -94,6 +98,7 @@ class HomeView(LoginRequiredMixin, ListView):
 
 
 @login_required(login_url='/login/')
+@allowed_users(allowed_roles=['admin'])
 def products(request):
     # Function based view
 
@@ -172,3 +177,7 @@ def delete_order(request, pk):
         order.delete()
         return redirect("/")
     return render(request, "accounts/delete.html", context=context)
+
+
+def user_page(request):
+    return render(request, 'accounts/user.html')
