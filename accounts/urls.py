@@ -1,7 +1,8 @@
-from .views import ( HomeView, products, customer, create_order, update_order, 
+from .views import (HomeView, products, customer, create_order, update_order,
                     delete_order,
-                    login_page, 
-                    register_page )
+                    login_page,
+                    register_page,
+                    logout_page)
 from django.urls import path
 
 app_name = "accounts"
@@ -10,6 +11,7 @@ urlpatterns = [
 
     # Login and Registration
     path('login/', login_page, name="login"),
+    path('logout/', logout_page, name="logout"),
     path('register/', register_page, name="register"),
 
     path('', HomeView.as_view(), name="home"),

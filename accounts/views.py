@@ -1,24 +1,66 @@
 from django.shortcuts import render, redirect
 from django.forms import inlineformset_factory
 from .models import Product, Order, Customer
+from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 from .forms import *
 from django.views.generic import ListView
 from .filters import OrderFilter
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 def register_page(request):
-    context ={}
-    return render(request, 'accounts/register.html', context)
+    """ If the user is authenticated, redirect the user to the home page.
+    Else , register the user and if there the user is registered successfully,
+    redirect the user to the login page."""
+
+    if request.user.is_authenticated:
+        return redirect("/")
+    else:
+        form = CreateUserForm()
+        context = {'form': form}
+
+        if request.method == "POST":
+            form = CreateUserForm(request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Account was created for " +
+                                 form.cleaned_data.get('username'))
+                return redirect("/login/")
+
+        return render(request, 'accounts/register.html', context)
 
 
 def login_page(request):
-    context = {}
-    return render(request, 'accounts/login.html', context)
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect("/")
+
+        else:
+            messages.info(request, "Username or password is incorrect!!")
+            return render(request, 'accounts/login.html')
+    return render(request, 'accounts/login.html')
 
 
-class HomeView(ListView):
+def logout_page(request):
+    logout(request)
+    messages.info(request, "User has been logged out!!")
+    return redirect('/login/')
+
+
+class HomeView(LoginRequiredMixin, ListView):
     # Generic Class based view
+
+    login_url = '/login/'
 
     # Set the template_name
     template_name = "accounts/dashboard.html"
@@ -51,6 +93,7 @@ class HomeView(ListView):
         return context
 
 
+@login_required(login_url='/login/')
 def products(request):
     # Function based view
 
@@ -64,6 +107,7 @@ def products(request):
     return render(request, "accounts/products.html", context=context)
 
 
+@login_required(login_url='/login/')
 def customer(request, pk):
     # Function based view
     customer = Customer.objects.get(id=pk)
@@ -81,6 +125,7 @@ def customer(request, pk):
     return render(request, "accounts/customer.html", context=context)
 
 
+@login_required(login_url='/login/')
 def create_order(request, pk):
     # Creating a form set with 10 forms. Customer is the parent and Order is the Child
     OrderFormSet = inlineformset_factory(
@@ -100,6 +145,7 @@ def create_order(request, pk):
     return render(request, "accounts/order_form.html", context=context)
 
 
+@login_required(login_url='/login/')
 def update_order(request, pk):
     # Update order using primary key of customer
     order = Order.objects.get(id=pk)
@@ -116,6 +162,7 @@ def update_order(request, pk):
     return render(request, "accounts/order_form.html", context=context)
 
 
+@login_required(login_url='/login/')
 def delete_order(request, pk):
     # Delete order using primary key of customer
     order = Order.objects.get(id=pk)
