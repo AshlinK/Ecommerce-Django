@@ -25,7 +25,11 @@
         <a class="nav-link" href="{% url 'accounts:home' %}">Dashboard</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="{%url 'accounts:products'%}">Products</a>
+        <a class="nav-link" href="{% url 'accounts:products' %}">Products</a>
+      </li>
+      {% else %}
+      <li class="nav-item">
+        <a class="nav-link" href="{% url 'accounts:user_account' %}">Settings</a>
       </li>
       {% endif %}
 

@@ -186,3 +186,17 @@ def user_page(request):
     print("Order ", orders)
     context = {'orders': orders}
     return render(request, "accounts/user.html", context=context)
+
+
+@login_required(login_url="/login/")
+@allowed_users(allowed_roles=['customer'])
+def account_page(request):
+    customer = request.user.customer
+    form = CustomerForm(instance=customer)
+    context = {'form': form}
+
+    if request.method == "POST":
+        form = CustomerForm(request.POST, request.FILES, instance=customer)
+        if form.is_valid():
+            form.save()
+    return render(request, "accounts/user_account.html", context=context)
