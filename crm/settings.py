@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django_filters',
 
     # Django project-specific apps
-    'accounts',
+    'accounts.apps.AccountsConfig',
+    'signals_example.apps.SignalsExampleConfig',
 ]
 
 MIDDLEWARE = [
